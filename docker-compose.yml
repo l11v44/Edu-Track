@@ -1,0 +1,26 @@
+services:
+  db:
+    image: postgres:15
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=mydb
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_NAME=mydb
+      - DB_USER=myuser
+      - DB_PASSWORD=mypassword
+
+volumes:
+  postgres_data:
