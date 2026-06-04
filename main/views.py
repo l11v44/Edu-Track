@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm
 from django.shortcuts import render, redirect
 from django.contrib.auth import login , logout
@@ -7,24 +8,36 @@ from .models import User
 def home(request):
     return render(request, 'main/home.html')
 
+
+from django.contrib.auth import login as auth_login
+from django.shortcuts import render, redirect
+from .forms import RegistrationForm
+
+
 def sign_up(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password1'])
-            user.username = form.cleaned_data['email']
-            user.save()
-            login(request, user)
-            return redirect('home')
-        else:
-            print(form.errors)
+            email = form.cleaned_data['email']
+            from .models import User
+            if User.objects.filter(username=email).exists():
+                form.add_error('email', 'A user with this email already exists.')
+            else:
+                user = form.save(commit=False)
+                user.set_password(form.cleaned_data['password1'])
+                user.username = email
+                user.save()
+                auth_login(request, user)
+                return redirect('home')
     else:
         form = RegistrationForm()
+
     return render(request, 'main/signup.html', {'form': form})
 
 from .forms import EmailAuthenticationForm
-def log_in(request):
+
+
+def login_view(request):
     if request.method == 'POST':
         form = EmailAuthenticationForm(data=request.POST)
         if form.is_valid():
@@ -35,25 +48,22 @@ def log_in(request):
     for field in form.fields.values():
         field.widget.attrs.update({'class': 'w-full px-4 py-3 rounded-xl border border-gray-200'})
 
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'main/login.html', {'form': form})
 
-def logout_view(request):
+def logout_(request):
     logout(request)
     return redirect('home')
-
-
+from .forms import ProfileForm
+@login_required
 def profile(request):
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
+        form = ProfileForm(request.POST , instance=request.user)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.first_name = form.cleaned_data['first_name']
-            user.last_name = form.cleaned_data['last_name']
-            user.role =form.cleaned_data['role']
-            user.save()
-            return redirect('home')
-    return render(request, 'profile.html', {'form': form,
-                                                                'user': request.user})
+            form.save()
+            return redirect('profile')
+    else:
+        form = ProfileForm(instance=request.user)
+    return render(request, 'main/profile.html', {'form': form})
 
 
 

@@ -1,10 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Lesson Details | EduTrack{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto py-12 px-4 animate-in fade-in duration-700">
+    <div class="mb-8">
+        <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Lesson Details</h2>
+        <p class="text-gray-500 mt-2">Create or update your lesson content below.</p>
+    </div>
+
+    <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
+        <form method="post" class="space-y-6">
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-2">{{ field.label }}</label>
+
+                    {% comment %}
+                      Здесь я прописал классы напрямую в атрибут 'class' через виджет,
+                      чтобы не использовать add_class.
+                    {% endcomment %}
+
+                    <div class="[&>input]:w-full [&>input]:px-4 [&>input]:py-3 [&>input]:rounded-xl [&>input]:border [&>input]:border-gray-300 [&>input]:focus:ring-2 [&>input]:focus:ring-indigo-500 [&>input]:outline-none [&>textarea]:w-full [&>textarea]:px-4 [&>textarea]:py-3 [&>textarea]:rounded-xl [&>textarea]:border [&>textarea]:border-gray-300 [&>textarea]:focus:ring-2 [&>textarea]:focus:ring-indigo-500 [&>textarea]:outline-none [&>textarea]:min-h-[300px]">
+                        {{ field }}
+                    </div>
+
+                    {% if field.errors %}
+                        <p class="text-red-500 text-xs mt-1.5">{{ field.errors.0 }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <div class="flex items-center gap-4 pt-4">
+                <button type="submit" class="flex-1 bg-indigo-600 text-white py-3.5 rounded-xl font-semibold hover:bg-indigo-700 transition shadow-lg shadow-indigo-200">
+                    Save Lesson
+                </button>
+                <a href="{% url 'teacher_dashboard' %}" class="px-6 py-3.5 rounded-xl font-semibold text-gray-600 hover:bg-gray-100 transition">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
