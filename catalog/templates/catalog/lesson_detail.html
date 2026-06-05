@@ -20,26 +20,141 @@
         </div>
     </article>
 
-    <div class="p-8 bg-white border border-gray-100 rounded-3xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
-        {% if is_completed %}
-            <div class="flex items-center text-emerald-600 font-bold">
-                <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mr-4">
-                    <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>
+    <div class="mb-12 space-y-4">
+        {% if lesson.assignments.exists or lesson.assignments.all %}
+
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-2xl font-bold text-gray-900">Lesson Assignments</h2>
+                {% if request.user == lesson.course.author %}
+                    <a href="{% url 'create_assignment' course_slug=lesson.course.slug lesson_slug=lesson.slug %}"
+                       class="inline-flex items-center bg-indigo-600 text-white px-4 py-2 rounded-xl font-bold hover:bg-indigo-700 transition shadow-sm hover:scale-105 active:scale-95 text-xs">
+                        + Add More
+                    </a>
+                {% endif %}
+            </div>
+
+            {% for assignment in lesson.assignments.all %}
+                <div class="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm space-y-4 transition-all hover:shadow-md">
+                    <div class="flex items-center justify-between border-b border-gray-50 pb-3">
+                        <div class="flex items-center gap-3">
+                            <span class="px-2 py-0.5 bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wider rounded-md">Task #{{ forloop.counter }}</span>
+                            <h3 class="text-lg font-bold text-gray-900">
+                                {% firstof assignment.title assignment.name "Homework Assignment" %}
+                            </h3>
+                        </div>
+
+                        {% if request.user == lesson.course.author %}
+                            <span class="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-100">
+                                Created by You
+                            </span>
+                        {% endif %}
+                    </div>
+
+                    <p class="text-gray-600 text-sm leading-normal whitespace-pre-line">
+                        {% firstof assignment.instructions assignment.description assignment.content "No specific instructions provided." %}
+                    </p>
+
+                    {% if request.user != lesson.course.author %}
+                        {% for submission in assignment.submissions.all %}
+                            {% if submission.student == request.user %}
+                                <div class="mt-4 p-4 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
+                                    <span class="text-xs font-bold text-slate-700">Status: {{ submission.status }}</span>
+                                    {% if submission.grade %}
+                                        <span class="px-3 py-1 bg-emerald-600 text-white text-xs font-bold rounded-lg">
+                                            Score: {{ submission.grade.score }}
+                                        </span>
+                                        <button onclick="document.getElementById('feedback-{{ submission.id }}').classList.toggle('hidden')"
+                                                class="text-xs text-indigo-600 font-bold hover:underline">
+                                            View Feedback
+                                        </button>
+                                    {% else %}
+                                        <span class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-lg">⏳ Pending</span>
+                                    {% endif %}
+                                </div>
+                                <div id="feedback-{{ submission.id }}" class="hidden mt-2 p-4 bg-indigo-50 rounded-xl text-xs text-gray-700 border border-indigo-100">
+                                    {{ submission.grade.feedback|default:"No feedback provided yet." }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="pt-3 border-t border-gray-50 flex items-center justify-between gap-4">
+    <div>
+        {% if request.user != lesson.course.author %}
+            {% if assignment.user_submission %}
+                <div class="flex items-center text-emerald-600 font-bold text-xs bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">
+                    <svg class="w-3.5 h-3.5 mr-1.5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"></path></svg>
+                    Submitted
                 </div>
-                <span>You have successfully completed this lesson!</span>
-            </div>
-        {% else %}
-            <div class="text-gray-600">
-                <h4 class="font-bold text-gray-900 text-lg">Ready to move on?</h4>
-                <p class="text-sm">Click the button to mark this lesson as finished and continue your progress.</p>
-            </div>
-            <form action="{% url 'lesson_completed' lesson.course.slug lesson.slug %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 hover:scale-105 active:scale-95">
-                    Mark as Completed
-                </button>
-            </form>
+            {% else %}
+                <span class="text-[11px] text-amber-600 font-medium bg-amber-50 px-2.5 py-1 rounded-md">
+                    Not submitted yet
+                </span>
+            {% endif %}
         {% endif %}
     </div>
+
+    <div class="flex justify-end gap-3">
+        {% if request.user == lesson.course.author %}
+            <a href="{% url 'teacher_pending_submissions' %}"
+               class="inline-flex items-center bg-white text-gray-700 border border-gray-200 px-4 py-2 rounded-xl font-bold hover:bg-gray-50 transition text-xs">
+                Review Submissions
+            </a>
+        {% else %}
+            {% if not assignment.user_submission %}
+                <a href="{% url 'submit_assignment' assignment_id=assignment.id %}"
+                   class="inline-flex items-center bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold hover:bg-indigo-700 transition shadow-md shadow-indigo-100 hover:scale-105 active:scale-95 text-xs">
+                    Submit Solution
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+                </div>
+            {% endfor %}
+
+        {% else %}
+            {% if request.user == lesson.course.author %}
+                <div class="bg-gray-50 border border-gray-100 rounded-3xl p-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="text-gray-600">
+                        <h4 class="font-bold text-gray-900 text-lg">No Assignment Yet</h4>
+                        <p class="text-sm">As the teacher, you can add a homework task for your students here.</p>
+                    </div>
+                    <a href="{% url 'create_assignment' course_slug=lesson.course.slug lesson_slug=lesson.slug %}"
+                       class="inline-flex justify-center items-center bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition shadow-md shadow-indigo-100 hover:scale-105 active:scale-95 text-sm text-center whitespace-nowrap">
+                        + Add Assignment
+                    </a>
+                </div>
+            {% else %}
+                <div class="p-6 bg-gray-50/50 rounded-3xl border border-gray-100 text-center">
+                    <p class="text-sm text-gray-400 italic">No homework assignment is required for this lesson.</p>
+                </div>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    {% if request.user != lesson.course.author %}
+        <div class="p-8 bg-white border border-gray-100 rounded-3xl shadow-sm flex flex-col md:flex-row items-center justify-between gap-6">
+            {% if is_completed %}
+                <div class="flex items-center text-emerald-600 font-bold">
+                    <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center mr-4">
+                        <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>
+                    </div>
+                    <span>You have successfully completed this lesson!</span>
+                </div>
+            {% else %}
+                <div class="text-gray-600">
+                    <h4 class="font-bold text-gray-900 text-lg">Ready to move on?</h4>
+                    <p class="text-sm">Click the button to mark this lesson as finished and continue your progress.</p>
+                </div>
+                <form action="{% url 'lesson_completed' lesson.course.slug lesson.slug %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full md:w-auto bg-indigo-600 text-white px-10 py-4 rounded-2xl font-bold hover:bg-indigo-700 transition shadow-lg shadow-indigo-200 hover:scale-105 active:scale-95">
+                        Mark as Completed
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

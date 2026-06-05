@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Methodology | EduTrack{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 py-32">
+    <div class="max-w-4xl mx-auto px-6">
+
+        <!-- Усиленный, масштабный заголовок -->
+        <header class="mb-32 text-center">
+            <h2 class="text-sm font-black text-indigo-600 tracking-[0.3em] uppercase mb-4">Our Architecture</h2>
+            <h1 class="text-[clamp(4rem,10vw,8rem)] font-black tracking-tighter text-gray-900 leading-[0.9]">
+                CORE <span class="text-transparent bg-clip-text bg-gradient-to-br from-indigo-500 to-purple-600">PROCESS</span>
+            </h1>
+            <div class="mt-8 h-1.5 w-32 bg-gray-900 rounded-full mx-auto"></div>
+        </header>
+
+        <!-- Поток карточек в стиле image_7c6ee4.png -->
+        <div class="space-y-8">
+            {% for step in "12345" %}
+            <section data-aos="fade-up" class="relative">
+                <div class="group relative p-12 rounded-[2.5rem] text-white shadow-xl transition-all duration-500 hover:-translate-y-2
+                    {% if step == '1' %}bg-indigo-600 shadow-indigo-200{% elif step == '2' %}bg-purple-600 shadow-purple-200{% elif step == '3' %}bg-blue-600 shadow-blue-200{% elif step == '4' %}bg-emerald-500 shadow-emerald-200{% else %}bg-pink-500 shadow-pink-200{% endif %}">
+
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-white/40 font-black text-6xl mb-6 block">0{{ step }}</span>
+                            <h2 class="text-4xl font-bold tracking-tight mb-4">
+                                {% if step == '1' %}Deconstruct{% elif step == '2' %}Synthesize{% elif step == '3' %}Execute{% elif step == '4' %}Adapt{% else %}Evolve{% endif %}
+                            </h2>
+                            <p class="text-xl text-white/90 font-medium leading-relaxed max-w-lg">
+                                {% if step == '1' %}Break down the complexity of the academic landscape into raw, actionable truths.{% elif step == '2' %}Connect fragmented pieces into a high-velocity, coherent management system.{% elif step == '3' %}Mobilize theory into kinetic force. We push knowledge into real-world application.{% elif step == '4' %}Refine your strategy through iterative feedback loops and critical analysis.{% else %}Transcend the framework. Become the final architect of your own craft.{% endif %}
+                            </p>
+                        </div>
+
+                        <!-- Дополнительная иконка-акцент для объема -->
+                        <div class="hidden md:block w-20 h-20 rounded-full bg-white/20 backdrop-blur-sm border border-white/30"></div>
+                    </div>
+                </div>
+            </section>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}

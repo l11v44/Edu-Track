@@ -5,6 +5,8 @@ STATUS_CHOICES = [
     ('Published', 'Published'),
 ]
 
+
+
 class Category(models.Model):
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
@@ -58,3 +60,10 @@ class LessonProgress(models.Model):
 
     def __str__(self):
         return f"{self.user} - {self.lesson}"
+from django.db.models.signals import post_save, post_delete
+from django.dispatch import receiver
+from django.core.cache import cache
+
+@receiver([post_save, post_delete], sender=Course)
+def clear_course_cache(sender, **kwargs):
+    cache.clear()

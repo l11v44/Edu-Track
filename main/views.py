@@ -5,65 +5,72 @@ from django.contrib.auth import login , logout
 from main.forms import RegistrationForm
 from .models import User
 
-def home(request):
-    return render(request, 'main/home.html')
+from django.views.generic import TemplateView
+
+class HomeView(TemplateView):
+    template_name = 'main/home.html'
 
 
 from django.contrib.auth import login as auth_login
 from django.shortcuts import render, redirect
 from .forms import RegistrationForm
 
+from django.views.generic import CreateView
+from django.contrib.auth import login
+from django.urls import reverse_lazy
+from .tasks import send_welcome_email
 
-def sign_up(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            email = form.cleaned_data['email']
-            from .models import User
-            if User.objects.filter(username=email).exists():
-                form.add_error('email', 'A user with this email already exists.')
-            else:
-                user = form.save(commit=False)
-                user.set_password(form.cleaned_data['password1'])
-                user.username = email
-                user.save()
-                auth_login(request, user)
-                return redirect('home')
-    else:
-        form = RegistrationForm()
+class SignUpView(CreateView):
+    form_class = RegistrationForm
+    template_name = 'main/signup.html'
+    success_url = reverse_lazy('home')
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        user.username = form.cleaned_data['email']
+        user.set_password(form.cleaned_data['password1'])
+        user.save()
+        send_welcome_email.delay(user.email)
 
-    return render(request, 'main/signup.html', {'form': form})
+        login(self.request, user)
+        return super().form_valid(form)
 
 from .forms import EmailAuthenticationForm
 
 
-def login_view(request):
-    if request.method == 'POST':
-        form = EmailAuthenticationForm(data=request.POST)
-        if form.is_valid():
-            login(request, form.get_user())
-            return redirect('home')
-    else:
-        form = EmailAuthenticationForm()
-    for field in form.fields.values():
-        field.widget.attrs.update({'class': 'w-full px-4 py-3 rounded-xl border border-gray-200'})
+from django.contrib.auth.views import LoginView
 
-    return render(request, 'main/login.html', {'form': form})
+class MyLoginView(LoginView):
+    template_name = 'main/login.html'
+    authentication_form = EmailAuthenticationForm
 
-def logout_(request):
-    logout(request)
-    return redirect('home')
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        for field in form.fields.values():
+            field.widget.attrs.update({'class': 'w-full px-4 py-3 rounded-xl border border-gray-200'})
+        return form
+
+
+from django.contrib.auth.views import LogoutView
+
+class MyLogoutView(LogoutView):
+    next_page = ''
+    http_method_names = ['get', 'post']
+
+
 from .forms import ProfileForm
-@login_required
-def profile(request):
-    if request.method == 'POST':
-        form = ProfileForm(request.POST , instance=request.user)
-        if form.is_valid():
-            form.save()
-            return redirect('profile')
-    else:
-        form = ProfileForm(instance=request.user)
-    return render(request, 'main/profile.html', {'form': form})
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from django.views.generic import UpdateView
+from django.urls import reverse_lazy
+
+class ProfileView(LoginRequiredMixin , UpdateView):
+    model = User
+    form_class = ProfileForm
+    template_name = 'main/profile.html'
+    success_url = reverse_lazy('profile')
+
+    def get_object(self):
+        return self.request.user
 
 
 

@@ -10,7 +10,7 @@
         </span>
     </div>
 
-    <div class="mb-10 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div class="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
             <p class="text-xs text-gray-500 uppercase font-bold tracking-wide">First Name</p>
             <p class="text-gray-900 font-semibold text-lg">{{ request.user.first_name }}</p>
@@ -24,6 +24,23 @@
             <p class="text-gray-900 font-semibold text-lg">{{ request.user.email }}</p>
         </div>
     </div>
+
+    {% if request.user.role == 'student' or request.user.get_role_display.lower == 'student' %}
+        <div class="mb-10">
+            <a href="{% url 'student_grades' %}" class="group flex items-center justify-between p-4 bg-indigo-50/50 hover:bg-indigo-50 border border-indigo-100/50 rounded-xl transition-all duration-200">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-md shadow-indigo-200">
+                        📊
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-indigo-900 text-sm">Academic Performance</h4>
+                        <p class="text-xs text-indigo-600/80 mt-0.5">Click here to view all your graded homework assignments and teacher reviews.</p>
+                    </div>
+                </div>
+                <span class="text-indigo-500 group-hover:translate-x-1 transition-transform font-bold text-lg">→</span>
+            </a>
+        </div>
+    {% endif %}
 
     <h3 class="text-lg font-bold text-gray-800 mb-4">Edit Profile</h3>
     <form method="post" class="space-y-6">

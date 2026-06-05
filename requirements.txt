@@ -1,2 +1,10 @@
-django
+django~=6.0.5
 psycopg2-binary
+celery~=5.6.3
+redis~=8.0.0
+pytest-django
+pytest-factoryboy
+factory_boy
+pytest~=9.0.3
+djangorestframework~=3.17.1
+pip~=25.0.1

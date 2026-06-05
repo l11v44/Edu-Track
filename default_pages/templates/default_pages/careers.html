@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Careers | EduTrack{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 py-32">
+    <div class="max-w-4xl mx-auto px-6">
+
+        <!-- Заголовок -->
+        <header class="mb-24 text-center">
+            <h2 class="text-sm font-black text-pink-600 tracking-[0.3em] uppercase mb-4">Join the Mission</h2>
+            <h1 class="text-[clamp(4rem,10vw,8rem)] font-black tracking-tighter text-gray-900 leading-[0.9]">
+                BUILD THE <span class="text-transparent bg-clip-text bg-gradient-to-br from-pink-500 to-orange-500">FUTURE</span>
+            </h1>
+        </header>
+
+        <!-- Основной блок -->
+        <section class="mb-24 p-12 rounded-[2.5rem] bg-gray-900 text-white shadow-2xl shadow-pink-200">
+            <h2 class="text-4xl font-bold mb-6">Engineered for Talent</h2>
+            <p class="text-xl text-gray-300 leading-relaxed max-w-2xl">
+                We are building the next generation of academic management. We look for thinkers, architects, and those who thrive in high-velocity environments. Our culture is rooted in autonomy, technical excellence, and the constant pursuit of efficiency.
+            </p>
+        </section>
+
+        <!-- Информационный блок вакансий (без кнопок) -->
+        <div class="space-y-8">
+            <h3 class="text-2xl font-black text-gray-900 mb-8">Active Openings</h3>
+
+            <div class="p-8 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                <h4 class="text-xl font-bold text-gray-900">Senior Frontend Engineer</h4>
+                <p class="text-gray-500 font-medium text-sm mt-1">Engineering / Remote / Full-time</p>
+                <p class="text-gray-600 mt-4 leading-relaxed">Focus on building high-performance, scalable interfaces using modern React and Tailwind patterns to ensure optimal user experience.</p>
+            </div>
+
+            <div class="p-8 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                <h4 class="text-xl font-bold text-gray-900">Product Designer</h4>
+                <p class="text-gray-500 font-medium text-sm mt-1">Design / Kyiv / Hybrid</p>
+                <p class="text-gray-600 mt-4 leading-relaxed">Responsible for the design systems and visual language of EduTrack. Translating complex academic workflows into clean, intuitive interfaces.</p>
+            </div>
+
+            <div class="p-8 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                <h4 class="text-xl font-bold text-gray-900">Backend Developer (Django)</h4>
+                <p class="text-gray-500 font-medium text-sm mt-1">Engineering / Remote / Full-time</p>
+                <p class="text-gray-600 mt-4 leading-relaxed">Building robust backend architectures, optimizing database performance, and ensuring seamless integration of complex service modules.</p>
+            </div>
+        </div>
+
+        <!-- Статичный футер -->
+        <div class="mt-24 py-12 border-t border-gray-200 text-center">
+            <p class="text-gray-400 text-sm font-bold uppercase tracking-[0.2em]">Inquiries</p>
+            <p class="text-gray-900 font-bold mt-2">careers@edutrack.com</p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Security | EduTrack{% endblock %}
+
+{% block content %}
+<div class="bg-gray-50 py-32">
+    <div class="max-w-4xl mx-auto px-6">
+
+        <header class="mb-24 text-center">
+            <h2 class="text-sm font-black text-blue-600 tracking-[0.3em] uppercase mb-4">Fortified Architecture</h2>
+            <h1 class="text-[clamp(4rem,10vw,8rem)] font-black tracking-tighter text-gray-900 leading-[0.9]">
+                SYSTEM <span class="text-transparent bg-clip-text bg-gradient-to-br from-blue-500 to-indigo-600">INTEGRITY</span>
+            </h1>
+        </header>
+
+        <div class="space-y-8">
+            <!-- Список фич -->
+            {% for item in security_features %}
+            <section data-aos="fade-up" class="relative group">
+                <div class="relative p-12 rounded-[2.5rem] text-white shadow-xl transition-all duration-500 hover:-translate-y-2
+                    {% if forloop.counter == 1 %}bg-blue-800 shadow-blue-200{% elif forloop.counter == 2 %}bg-indigo-900 shadow-indigo-200{% elif forloop.counter == 3 %}bg-slate-800 shadow-slate-200{% else %}bg-gray-800 shadow-gray-200{% endif %}">
+
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <span class="text-white/30 font-black text-6xl mb-6 block">0{{ forloop.counter }}</span>
+                            <h2 class="text-4xl font-bold tracking-tight mb-4">{{ item.title }}</h2>
+                            <p class="text-xl text-white/90 font-medium leading-relaxed max-w-lg">{{ item.desc }}</p>
+                        </div>
+                        <div class="hidden md:block w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                            <span class="text-xs font-bold text-white/50 tracking-widest">SECURE</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            {% endfor %}
+        </div>
+
+        <!-- ТЕХНИЧЕСКОЕ ЗАПОЛНЕНИЕ (Footers) -->
+        <div class="mt-24 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div class="p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                <div class="text-blue-500 font-black text-2xl mb-1">99.99%</div>
+                <div class="text-gray-400 text-xs font-bold uppercase tracking-widest">Uptime</div>
+            </div>
+            <div class="p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                <div class="text-blue-500 font-black text-2xl mb-1">256-BIT</div>
+                <div class="text-gray-400 text-xs font-bold uppercase tracking-widest">Encryption</div>
+            </div>
+            <div class="p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                <div class="text-blue-500 font-black text-2xl mb-1">ISO</div>
+                <div class="text-gray-400 text-xs font-bold uppercase tracking-widest">Certified</div>
+            </div>
+            <div class="p-6 rounded-2xl bg-white border border-gray-100 shadow-sm">
+                <div class="text-blue-500 font-black text-2xl mb-1">AUDIT</div>
+                <div class="text-gray-400 text-xs font-bold uppercase tracking-widest">Active</div>
+            </div>
+        </div>
+
+        <div class="mt-12 text-center">
+            <p class="text-gray-400 text-sm font-medium tracking-tight">System status: <span class="text-emerald-500 font-bold">ALL SYSTEMS OPERATIONAL</span></p>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
