@@ -15,10 +15,15 @@ class CourseForm(forms.ModelForm):
 class LessonForm(forms.ModelForm):
     class Meta:
         model = Lesson
-        fields = ['title','order','content']
+        fields = ['title','content' , 'video_url']
         widgets = {
             'title': forms.TextInput(attrs={'class':'form-control'}),
             'content': forms.Textarea(attrs={'class':'form-control'}),
-            'order': forms.NumberInput(attrs={'class':'form-control'}),
+        }
+        labels = {
+            'video_url': 'YouTube Video URL',
+        }
+        help_texts = {
+            'video_url': 'Paste the link to your YouTube video here.',
         }
 

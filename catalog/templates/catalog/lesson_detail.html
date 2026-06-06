@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load video_filters %} {# Додано завантаження фільтра для YouTube ID #}
 
 {% block title %}{{ lesson.title }} | EduTrack{% endblock %}
 
@@ -14,6 +15,20 @@
 
     <article class="mb-12">
         <h1 class="text-5xl font-extrabold text-gray-900 mb-8 tracking-tight">{{ lesson.title }}</h1>
+        {% if lesson.video_url %}
+    <div class="mb-8 overflow-hidden rounded-3xl shadow-md border border-gray-100 bg-black aspect-video relative">
+
+        <iframe
+            class="absolute top-0 left-0 w-full h-full"
+            src="https://www.youtube.com/embed/{{ lesson.video_url|get_youtube_id }}?rel=0&modestbranding=1&autoplay=0&origin=http://localhost:8000"
+            title="YouTube video player"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerpolicy="strict-origin-when-cross-origin"
+            allowfullscreen>
+        </iframe>
+        </div>
+{% endif %}
 
         <div class="prose prose-lg prose-indigo max-w-none text-gray-700 leading-relaxed bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
             {{ lesson.content|linebreaks }}

@@ -53,6 +53,7 @@ urlpatterns = [
     path('security/', default_views.SecurityView.as_view(), name='security'),
     path('careers/', default_views.CareersView.as_view(), name='careers'),
     path('investors/', default_views.InvestorsView.as_view(), name='investors'),
+    path('verify/' , main_views.VerifyCodeView.as_view(), name='verify_code'),
 ]
 
 

@@ -14,25 +14,28 @@ class HomeView(TemplateView):
 from django.contrib.auth import login as auth_login
 from django.shortcuts import render, redirect
 from .forms import RegistrationForm
-
+from .tasks import send_verification_email
 from django.views.generic import CreateView
 from django.contrib.auth import login
 from django.urls import reverse_lazy
-from .tasks import send_welcome_email
-
+import random
+from django.shortcuts import render, redirect
 class SignUpView(CreateView):
     form_class = RegistrationForm
     template_name = 'main/signup.html'
     success_url = reverse_lazy('home')
+
     def form_valid(self, form):
         user = form.save(commit=False)
         user.username = form.cleaned_data['email']
         user.set_password(form.cleaned_data['password1'])
+        user.is_active = False
+        code = str(random.randint(100000, 999999))
+        user.verification_code = code
         user.save()
-        send_welcome_email.delay(user.email)
-
-        login(self.request, user)
-        return super().form_valid(form)
+        send_verification_email.delay(user.email, code)
+        self.request.session['email_to_verify'] = user.email
+        return redirect('verify_code')
 
 from .forms import EmailAuthenticationForm
 
@@ -72,7 +75,33 @@ class ProfileView(LoginRequiredMixin , UpdateView):
     def get_object(self):
         return self.request.user
 
+import random
+from django.urls import reverse_lazy
+from django.views.generic import FormView
+from django.contrib.auth import login
+from django.shortcuts import redirect
+from .forms import VerificationForm
+from .models import User
+from .tasks import send_verification_email
+class VerifyCodeView(FormView):
+    form_class = VerificationForm
+    template_name = 'main/verify.html'
+    success_url = reverse_lazy('home')
 
+    def form_valid(self, form):
+        user_code = form.cleaned_data['code']
+        email = self.request.session.get('email_to_verify')
 
-
-
+        try:
+            user = User.objects.get(email=email)
+            if user.verification_code == user_code:
+                user.is_active = True
+                user.verification_code = None
+                user.save()
+                login(self.request, user)
+                return super().form_valid(form)
+            else:
+                form.add_error('code', 'Invalid verification code.')
+                return self.form_invalid(form)
+        except User.DoesNotExist:
+            return redirect('signup')

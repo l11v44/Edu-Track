@@ -1,31 +1,29 @@
+
 from celery import shared_task
-from django.core.mail import send_mail
-from config.settings import DEFAULT_FROM_EMAIL
 
 @shared_task
-def send_welcome_email(user_email):
+def send_verification_email(user_email, code):
     send_mail(
-        'Welcome to EduTrack',
-        'Thank you for joining our platform.',
-        DEFAULT_FROM_EMAIL,
-        [user_email],
+        subject='Your Verification Code for EduTrack',
+        message=f'Welcome to EduTrack! Your verification code is: {code}',
+        from_email='EduTrack <vlad2511k@gmail.com>',
+        recipient_list=[user_email],
         fail_silently=False,
     )
 
 
 from celery import shared_task
 from django.core.mail import send_mail
-from config.settings import DEFAULT_FROM_EMAIL
 from assessment.models import Grade
 
 @shared_task
-def send_grade_notification(grade_id):
+def send_grade_notification(grade_id , user_email):
     grade = Grade.objects.select_related('submission__student').get(id=grade_id)
     send_mail(
-        'Your assignment has been graded',
-        f'Hello, your grade is {grade.score}.',
-        DEFAULT_FROM_EMAIL,
-        [grade.submission.student.email],
+        subject='Welcome to EduTrack',
+        message='Thank you for joining our platform.',
+        from_email='vlad2511k@gmail.com',
+        recipient_list=[user_email],
         fail_silently=False,
     )
 
@@ -38,20 +36,3 @@ from assessment.models import Assignment
 from config.settings import DEFAULT_FROM_EMAIL
 
 
-@shared_task
-def send_deadline_reminders():
-    tomorrow = timezone.now().date() + timedelta(days=1)
-    assignments = Assignment.objects.filter(deadline=tomorrow).select_related('lesson__course')
-
-    messages = []
-    for item in assignments:
-        students = item.lesson.course.students.all()
-        for student in students:
-            messages.append((
-                'Deadline Reminder',
-                f'Assignment {item.title} is due tomorrow.',
-                DEFAULT_FROM_EMAIL,
-                [student.email]
-            ))
-
-    send_mass_mail(messages, fail_silently=False)

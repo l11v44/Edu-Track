@@ -18,7 +18,12 @@
             <a href="{% url 'home' %}" class="text-2xl font-black text-indigo-600 tracking-tighter">EduTrack</a>
 
             <div class="hidden md:flex items-center space-x-8">
+                {% if request.user.role == 'T' %}
+            <a href="{% url 'teacher_dashboard' %}" class="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition">Teacher Dashboard</a>
+                {% endif %}
+                {% if request.user.role == 'T' or request.user.role == 'S' or request.user.role == 'A'%}
                 <a href="{% url 'course_list' %}" class="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition">Explore Courses</a>
+                {% endif %}
                 <a href="{% url 'about' %}" class="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition">About</a>
                 <a href="{% url 'manifesto' %}" class="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition">Manifesto</a>
                 <a href="{% url 'methodology' %}" class="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition">Methodology</a>

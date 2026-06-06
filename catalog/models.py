@@ -31,9 +31,10 @@ class Course(models.Model):
 class Lesson(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')
     title = models.CharField(max_length=200)
-    order = models.PositiveIntegerField()
+    order = models.PositiveIntegerField(blank=True, null=True)
     content = models.TextField()
     slug = models.SlugField(unique=False, blank=True)
+    video_url = models.URLField(help_text="Paste YouTube video link here")
 
     class Meta:
         unique_together = ('course', 'slug')
@@ -43,6 +44,12 @@ class Lesson(models.Model):
         if not self.slug:
             slug = slugify(self.title)
             self.slug = slug if slug else f"lesson-{self.order}"
+        if not self.order:
+            last_lesson = Lesson.objects.filter(course=self.course).order_by('-order').first()
+            if last_lesson:
+                self.order = last_lesson.order + 1
+            else:
+                self.order = 1
         super().save(*args, **kwargs)
 
     def __str__(self):
