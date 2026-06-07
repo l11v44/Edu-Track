@@ -9,7 +9,7 @@ STATUS_CHOICES = [
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True , blank=True , null=True)
 
     def __str__(self):
         return self.name
@@ -19,11 +19,19 @@ class Course(models.Model):
     students = models.ManyToManyField('main.User', related_name='enrolled_courses', blank=True)
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='courses')
     title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(unique=True , blank=True , null=True)
     description = models.TextField()
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Draft')
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug or self.slug == "":
+            self.slug = slugify(self.title)
+        else:
+            self.slug = slugify(self.slug)
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
@@ -44,6 +52,9 @@ class Lesson(models.Model):
         if not self.slug:
             slug = slugify(self.title)
             self.slug = slug if slug else f"lesson-{self.order}"
+        else:
+            self.slug = slugify(self.slug)
+
         if not self.order:
             last_lesson = Lesson.objects.filter(course=self.course).order_by('-order').first()
             if last_lesson:

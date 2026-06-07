@@ -18,6 +18,9 @@
             <a href="{% url 'home' %}" class="text-2xl font-black text-indigo-600 tracking-tighter">EduTrack</a>
 
             <div class="hidden md:flex items-center space-x-8">
+                {% if request.user.role == 'S' %}
+            <a href="{% url 'my_courses' %}" class="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition">My Courses</a>
+                {% endif %}
                 {% if request.user.role == 'T' %}
             <a href="{% url 'teacher_dashboard' %}" class="text-sm font-semibold text-gray-600 hover:text-indigo-600 transition">Teacher Dashboard</a>
                 {% endif %}

@@ -26,7 +26,7 @@ from django.views.decorators.cache import cache_page
 from django.views.generic import ListView
 from .models import Course
 
-@method_decorator(cache_page(60 * 15), name='dispatch')
+#@method_decorator(cache_page(60 * 15), name='dispatch')
 class CourseListView(LoginRequiredMixin, ListView):
     model = Course
     template_name = 'catalog/course_list.html'
@@ -109,12 +109,7 @@ class TeacherDashboardView(LoginRequiredMixin, TeacherRequiredMixin, ListView):
 
 
 
-@login_required
-def my_courses(request):
-    enrolled_courses = request.user.enrolled_courses.all()
-    return render(request , 'catalog/my_courses.html', {
-        'enrolled_courses': enrolled_courses
-    })
+
 
 from django.views.generic import ListView
 from django.contrib.auth.mixins import LoginRequiredMixin

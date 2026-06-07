@@ -10,7 +10,12 @@ class CourseForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'class':'form-control'}),
             'description': forms.Textarea(attrs={'class':'form-control'}),
             'price': forms.NumberInput(attrs={'class':'form-control'}),
+            'slug': forms.TextInput(attrs={'placeholder': 'Leave blank for auto-generation'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['slug'].required = False
 
 class LessonForm(forms.ModelForm):
     class Meta:
