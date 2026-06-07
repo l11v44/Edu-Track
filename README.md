@@ -8,7 +8,6 @@
 * [Features](#features)
 * [User Roles](#user-roles)
 * [Installation](#installation)
-* [Test Accounts](#test-accounts)
 
 ---
 
@@ -65,28 +64,14 @@ docker-compose up --build
 docker-compose exec web python manage.py migrate
 
 ```
+4. **Initialize Admin Account**
+```bash
+docker compose exec -e DJANGO_SUPERUSER_PASSWORD=your_secure_password web python manage.py createsuperuser --noinput --username admin --email admin@example.com
 
+```
 
-4. **Access the application:**
+5. **Access the application:**
 Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser.
 
----
-
-### Test Accounts
-
-You can use the following credentials to explore the platform:
-
-* **Teacher:**
-* **Email:** `teacher@gmail.com`
-* **Password:** `1`
-
-
-* **Student:**
-* **Email:** `student@gmail.com`
-* **Password:** `1`
-
-
-
----
 
 *Author: lav4* *«Edu-Track — Making education simple and accessible for everyone.»*
